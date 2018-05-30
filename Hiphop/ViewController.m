@@ -17,6 +17,8 @@
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *MessageLabel;
+@property (weak, nonatomic) IBOutlet UIButton *BtnPlayBGM;
+@property (weak, nonatomic) IBOutlet UIButton *BtnPlayRecord;
 
 
 @end
@@ -75,6 +77,14 @@
     //[self convertMP3ToAAC];
 }
 
+- (void)playFinished {
+    _MessageLabel.text = @"finished";
+    [_MessageLabel sizeToFit];
+    
+    //复原按钮状态
+    [_BtnPlayBGM setTitle:@"播放背景音乐(已解码)" forState:UIControlStateNormal];
+    [_BtnPlayRecord setTitle:@"录音回放" forState:UIControlStateNormal];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -84,6 +94,11 @@
     //初始化
     player = [[AudioPlayer alloc] init];
     recorder = [[AudioRecorder alloc] init];
+    
+    //注册通知观察者
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"playFinished" object:player queue:nil usingBlock:^(NSNotification* note){
+        [self playFinished];
+    }];
     
     NSLog(@"stop");
 }

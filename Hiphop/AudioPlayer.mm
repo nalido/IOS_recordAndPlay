@@ -41,6 +41,15 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
         buffer->mAudioDataByteSize = (UInt32)len;
         AudioQueueEnqueueBuffer(queue, buffer, 0, NULL);
     }
+    
+    if(audioDataIndex >= audioDataLength){
+        //发送消息给主线程 异步消息 不阻塞当前线程
+        NSNotification *asyncNotification = [NSNotification notificationWithName:@"playFinished"  object:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // 将通知添加到消息队列中
+            [[NSNotificationQueue defaultQueue] enqueueNotification:asyncNotification postingStyle:NSPostNow];
+        });
+    }
 }
 
 - (void)setAudioFormat {
