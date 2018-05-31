@@ -21,11 +21,28 @@
 @property (weak, nonatomic) IBOutlet UIButton *BtnPlayRecord;
 @property (weak, nonatomic) IBOutlet UILabel *Mp3InfoLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *Mp3Img;
+@property (weak, nonatomic) IBOutlet UILabel *DelayLabel;
+@property (weak, nonatomic) IBOutlet UILabel *DecayLabel;
 
 
 @end
 
 @implementation ViewController
+
+- (IBAction)onSliderDelayChanged:(UISlider *)sender {
+    _DelayLabel.text = [NSString stringWithFormat:@"%d", (int)sender.value];
+    [_DelayLabel sizeToFit];
+    
+    player->mDelay = (int)sender.value;
+}
+
+- (IBAction)onSliderDecayChanged:(UISlider *)sender {
+    _DecayLabel.text = [NSString stringWithFormat:@"%.1f", sender.value];
+    [_DecayLabel sizeToFit];
+    
+    player->mDecay = sender.value;
+}
+
 
 - (IBAction)onClickRecord:(UIButton *)sender {
     NSString *action = sender.titleLabel.text;
@@ -48,7 +65,10 @@
     }
     else{
         [sender setTitle:@"停止" forState:UIControlStateNormal];
-        [player readPcmAndPlay:@"record.pcm"];
+        //[player readPcmAndPlay:@"record.pcm"];
+        player->mDelay = [_DelayLabel.text intValue];
+        player->mDecay = [_DecayLabel.text floatValue];
+        [player playPcmFileWithEffect:@"record.pcm"];
     }
 }
 

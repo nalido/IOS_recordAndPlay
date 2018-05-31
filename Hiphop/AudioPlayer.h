@@ -32,13 +32,28 @@
     AudioQueueRef audioQueue;
     //音频缓存
     AudioQueueBufferRef audioQueueBuffers[QUEUE_BUFFER_SIZE];
+    
+    @public
+    //混响延时， 即回声长短
+    int mDelay;
+    //声音衰减系数， 即环境消音系数
+    float mDecay;
 }
 
-//直接播放数组
+/**
+直接播放数组
+ **/
 - (void)play:(Byte*)audioByte Length:(long)len;
 
-//读取一个pcm文件并播放
+/**
+ 读取一个pcm文件并播放, 不带效果
+ **/
 - (void)readPcmAndPlay:(NSString*)pcmFileName;
+
+/**
+ 带混响效果播放pcm文件， 单单用来播放录音的混响效果
+ **/
+- (void)playPcmFileWithEffect:(NSString*)pcmFileName;
 
 - (void)stop;
 

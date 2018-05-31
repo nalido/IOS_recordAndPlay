@@ -118,6 +118,38 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
     AudioQueueStart(audioQueue, NULL);
 }
 
+- (void)playPcmFileWithEffect:(NSString*)pcmFileName {
+    NSString *docDir = [ZSJPathUtilities documentsPath];
+    NSString *pcmPath = [docDir stringByAppendingPathComponent:pcmFileName];
+    NSFileHandle *pcmFileHandle = [NSFileHandle fileHandleForReadingAtPath:pcmPath];
+    
+    NSLog(@"开始合成效果>>>>");
+    NSData *data = [pcmFileHandle readDataToEndOfFile];
+    NSInteger len = [data length];
+    Byte* reverb = new Byte[len];
+    memcpy(reverb, [data bytes], len);
+    
+    //混响算法
+    for(int i = 0; i*2+1<len; i++){
+        int preIndex = i - mDelay;
+        if(i < mDelay) continue;
+        
+        short newSound = (short)((reverb[i*2+1]<<8)&0xff00) | (reverb[i*2]&0x0ff);
+        short oldSound = (short)((reverb[preIndex*2+1]<<8)&0xff00) | (reverb[preIndex*2]&0x0ff);
+        int reverbSound = (newSound>>1) + ((int)(oldSound*mDecay)>>1);
+        
+        if(i == 11568/2) {
+            NSLog(@"log:%d %x %x %x %x",
+                                  reverbSound, reverb[i*2+1], reverb[i*2],
+                                  reverb[preIndex*2+1], reverb[preIndex*2]);
+        }
+        
+        reverb[i*2+1] = (reverbSound >> 8) &0x0ff;
+        reverb[i*2] = (reverbSound & 0x0ff);
+    }
+    [self play:reverb Length:len];
+}
+
 - (void)readPcmAndPlay:(NSString*)pcmFileName {
     NSString *docDir = [ZSJPathUtilities documentsPath];
     NSString *pcmPath = [docDir stringByAppendingPathComponent:pcmFileName];

@@ -10,7 +10,7 @@
 
 @implementation AudioRecorder
 @synthesize aqc;
-@synthesize audioDataLength;
+//@synthesize audioDataLength;
 
 static void AQInputCallback(void *inUserData, AudioQueueRef inAudioQueue, AudioQueueBufferRef inBuffer,
                             const AudioTimeStamp *inStartTime, unsigned int inNumPackets,
@@ -55,7 +55,7 @@ static void AQInputCallback(void *inUserData, AudioQueueRef inAudioQueue, AudioQ
         aqc.mRecPtr = 0;
         aqc.mRun = 1;
     }
-    audioDataIndex = 0;
+    //audioDataIndex = 0;
     return self;
 }
 
@@ -71,22 +71,25 @@ static void AQInputCallback(void *inUserData, AudioQueueRef inAudioQueue, AudioQ
 
 - (void) stop {
     AudioQueueStop(aqc.mQueue, true);
+    //写入pcm数据
+    //NSData *data = [NSData dataWithBytes:audioByte length:audioDataLength];
+    //[pcmfileHandle writeData:data];
 }
 
 - (void) pause {
     AudioQueuePause(aqc.mQueue);
 }
 
-- (Byte*) getBytes {
-    return audioByte;
-}
+//- (Byte*) getBytes {
+//    return audioByte;
+//}
 
 - (void) processAudioBuffer:(AudioQueueBufferRef)buffer withQueue:(AudioQueueRef)queue {
     NSLog(@"processAudioData: %d", buffer->mAudioDataByteSize);
     
-    memcpy(audioByte+audioDataIndex, buffer->mAudioData, buffer->mAudioDataByteSize);
-    audioDataIndex += buffer->mAudioDataByteSize;
-    audioDataLength = audioDataIndex;
+    //memcpy(audioByte+audioDataIndex, buffer->mAudioData, buffer->mAudioDataByteSize);
+    //audioDataIndex += buffer->mAudioDataByteSize;
+    //audioDataLength = audioDataIndex;
     
     //写入pcm数据
     NSData *data = [NSData dataWithBytes:buffer->mAudioData length:buffer->mAudioDataByteSize];

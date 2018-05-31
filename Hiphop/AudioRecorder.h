@@ -27,19 +27,19 @@ typedef struct AQCallbackStruct{
 @interface AudioRecorder: NSObject {
     AQCallbackStruct aqc;
     AudioFileTypeID fileFormat;
-    long audioDataLength;
-    Byte audioByte[999999];
-    long audioDataIndex;
+    //long audioDataLength;
+    //Byte audioByte[999999];
+    //long audioDataIndex;
     NSFileHandle *pcmfileHandle;
 }
 
 - (id) init:(NSString*)pcmFileName;
 - (void) start;
 - (void) stop;
-- (Byte*) getBytes;
+//- (Byte*) getBytes;
 - (void) processAudioBuffer:(AudioQueueBufferRef)buffer withQueue:(AudioQueueRef) queue;
 
 @property (nonatomic, assign) AQCallbackStruct aqc;
-@property (nonatomic, assign) long audioDataLength;
+//@property (nonatomic, assign) long audioDataLength;
 
 @end
