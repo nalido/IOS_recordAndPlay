@@ -28,6 +28,7 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
 
 //读取缓存数据
 - (void)fillBuffer:(AudioQueueRef)queue queueBuffer:(AudioQueueBufferRef)buffer {
+    if(audioByte == NULL) return;
     if(audioDataIndex + EVERY_READ_LENGTH < audioDataLength){
         memcpy(buffer->mAudioData, audioByte + audioDataIndex, EVERY_READ_LENGTH);
         audioDataIndex += EVERY_READ_LENGTH;
@@ -84,7 +85,7 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
     if(audioQueue) {
         NSLog(@"Release AudioQueueNewOutput");
         
-        [self stop];
+        //[self stop];
         for(int i=0; i<QUEUE_BUFFER_SIZE; i++){
             AudioQueueFreeBuffer(audioQueue, audioQueueBuffers[i]);
             audioQueueBuffers[i] = nil;
@@ -99,6 +100,12 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
     AudioQueueFlush(audioQueue);
     AudioQueueReset(audioQueue);
     AudioQueueStop(audioQueue, TRUE);
+    
+    if(audioByte != NULL){
+        delete[] audioByte;
+        audioByte = NULL;
+        audioDataLength = 0;
+    }
 }
 
 - (void)play:(Byte*)byte Length:(long)len {
@@ -107,6 +114,12 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
     audioDataLength = len;
     
     NSLog(@"Audio Play Start >>>>>>");
+    //发送消息给主线程 异步消息 不阻塞当前线程
+    NSNotification *asyncNotification = [NSNotification notificationWithName:@"playstarted"  object:self];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        // 将通知添加到消息队列中
+        [[NSNotificationQueue defaultQueue] enqueueNotification:asyncNotification postingStyle:NSPostNow];
+    });
     
     AudioQueueReset(audioQueue);
     [self setAudioFormat];
@@ -137,12 +150,6 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
         short newSound = (short)((reverb[i*2+1]<<8)&0xff00) | (reverb[i*2]&0x0ff);
         short oldSound = (short)((reverb[preIndex*2+1]<<8)&0xff00) | (reverb[preIndex*2]&0x0ff);
         int reverbSound = (newSound>>1) + ((int)(oldSound*mDecay)>>1);
-        
-        if(i == 11568/2) {
-            NSLog(@"log:%d %x %x %x %x",
-                                  reverbSound, reverb[i*2+1], reverb[i*2],
-                                  reverb[preIndex*2+1], reverb[preIndex*2]);
-        }
         
         reverb[i*2+1] = (reverbSound >> 8) &0x0ff;
         reverb[i*2] = (reverbSound & 0x0ff);

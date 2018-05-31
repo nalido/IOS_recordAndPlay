@@ -83,11 +83,17 @@
                                 <rect key="frame" x="16" y="585" width="31" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="演唱"/>
+                                <connections>
+                                    <action selector="onClickSing:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DhR-zn-Gea"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pbp-V1-28T">
                                 <rect key="frame" x="69" y="585" width="62" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="演唱回放"/>
+                                <connections>
+                                    <action selector="onClickPlaybackSing:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fw5-fg-5Z1"/>
+                                </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QWa-kW-Fqm">
                                 <rect key="frame" x="221" y="509" width="92" height="30"/>
@@ -145,6 +151,8 @@
                     <connections>
                         <outlet property="BtnPlayBGM" destination="J5I-lM-pPr" id="v88-8B-r9g"/>
                         <outlet property="BtnPlayRecord" destination="U8X-QX-QOz" id="boO-Bj-4I0"/>
+                        <outlet property="BtnPlaySing" destination="Pbp-V1-28T" id="jfN-hi-6M4"/>
+                        <outlet property="BtnSing" destination="88o-3T-vYi" id="VxI-JS-f3g"/>
                         <outlet property="DecayLabel" destination="bMU-Lu-tA2" id="cZf-5D-Rj2"/>
                         <outlet property="DelayLabel" destination="j6a-an-Uwu" id="6bM-3B-vNv"/>
                         <outlet property="MessageLabel" destination="rZm-dz-iFs" id="5Va-3q-Zzl"/>

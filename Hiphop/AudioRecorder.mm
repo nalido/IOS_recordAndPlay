@@ -71,9 +71,6 @@ static void AQInputCallback(void *inUserData, AudioQueueRef inAudioQueue, AudioQ
 
 - (void) stop {
     AudioQueueStop(aqc.mQueue, true);
-    //写入pcm数据
-    //NSData *data = [NSData dataWithBytes:audioByte length:audioDataLength];
-    //[pcmfileHandle writeData:data];
 }
 
 - (void) pause {
