@@ -32,6 +32,7 @@
 		39236C7620BD4BCE00946EC0 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 39236C7520BD4BCE00946EC0 /* libiconv.tbd */; };
 		39236C8320BD505A00946EC0 /* ZSJPathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 39236C8020BD505A00946EC0 /* ZSJPathUtilities.m */; };
 		39236C8420BD505A00946EC0 /* ZSJTranscode_AAC.m in Sources */ = {isa = PBXBuildFile; fileRef = 39236C8220BD505A00946EC0 /* ZSJTranscode_AAC.m */; };
+		3939A86920BFA39800ACDA4A /* Mp3Info.m in Sources */ = {isa = PBXBuildFile; fileRef = 3939A86820BFA39800ACDA4A /* Mp3Info.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,6 +188,8 @@
 		39236C8020BD505A00946EC0 /* ZSJPathUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSJPathUtilities.m; sourceTree = "<group>"; };
 		39236C8120BD505A00946EC0 /* ZSJTranscode_AAC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZSJTranscode_AAC.h; sourceTree = "<group>"; };
 		39236C8220BD505A00946EC0 /* ZSJTranscode_AAC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZSJTranscode_AAC.m; sourceTree = "<group>"; };
+		3939A86720BFA37400ACDA4A /* Mp3Info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mp3Info.h; sourceTree = "<group>"; };
+		3939A86820BFA39800ACDA4A /* Mp3Info.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Mp3Info.m; sourceTree = "<group>"; };
 		399406A220BD35D5006E3D66 /* Hiphop.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Hiphop.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -269,6 +272,8 @@
 				39221FB020BE542600381168 /* AudioPlayer.mm */,
 				39221FB220BE76FE00381168 /* AudioRecorder.h */,
 				39221FB720BE77BF00381168 /* AudioRecorder.mm */,
+				3939A86720BFA37400ACDA4A /* Mp3Info.h */,
+				3939A86820BFA39800ACDA4A /* Mp3Info.m */,
 			);
 			path = Hiphop;
 			sourceTree = "<group>";
@@ -635,6 +640,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3939A86920BFA39800ACDA4A /* Mp3Info.m in Sources */,
 				39221FB820BE77C000381168 /* AudioRecorder.mm in Sources */,
 				3904BF3520BD323500CA6582 /* ViewController.m in Sources */,
 				39236C8320BD505A00946EC0 /* ZSJPathUtilities.m in Sources */,

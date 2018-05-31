@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ZSJTranscode_AAC.h"
 #import "ZSJPathUtilities.h"
+#import "Mp3Info.h"
 
 @interface AudioDecoder : NSObject
 
@@ -35,5 +36,13 @@
  @param packetLength 当前ES流的长度， 即帧长度
  **/
 //+ (NSData*) adtsDataForPacketLength:(NSUInteger)packetLength;
+
+/**
+ 读取mp3音乐信息和专辑图片
+ 
+ @param mp3FileName mp3文件名
+ @return 格式化的信息字符串
+ **/
++ (Mp3Info*)showMp3Info:(NSString*)mp3FileName needImage:(BOOL)needed;
 
 @end

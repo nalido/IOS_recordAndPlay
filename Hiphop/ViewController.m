@@ -19,6 +19,8 @@
 @property (weak, nonatomic) IBOutlet UILabel *MessageLabel;
 @property (weak, nonatomic) IBOutlet UIButton *BtnPlayBGM;
 @property (weak, nonatomic) IBOutlet UIButton *BtnPlayRecord;
+@property (weak, nonatomic) IBOutlet UILabel *Mp3InfoLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *Mp3Img;
 
 
 @end
@@ -69,6 +71,18 @@
         [player readPcmAndPlay:@"陈一发儿 - 弦上有春秋.pcm"];
     }
 }
+
+- (IBAction)onClickShowInfo:(UIButton *)sender {
+    Mp3Info *mp3Info = [AudioDecoder showMp3Info:@"陈一发儿 - 弦上有春秋.mp3" needImage:true];
+    _Mp3InfoLabel.text = [mp3Info getAllInfoString];
+    _Mp3InfoLabel.numberOfLines = 0;
+    _Mp3InfoLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    [_Mp3InfoLabel sizeToFit];
+    
+    UIImage *pic = [UIImage imageWithData:mp3Info->pic];
+    _Mp3Img.image = pic;
+}
+
 
 - (IBAction)onClickDecode:(id)sender {
     //[AudioDecoder convertMP3:@"北京欢迎你.mp3" toPCM:@"北京欢迎你.pcm"];
