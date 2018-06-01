@@ -194,62 +194,49 @@
         return;
     }
     
-    //初始化先进先出缓存队列
-    AVAudioFifo *fifo = av_audio_fifo_alloc(AV_SAMPLE_FMT_FLTP, 1, inputCodecCtx->frame_size);
-    
-    //获取编码每帧的最大取样数
-    int output_frame_size = inputCodecCtx->frame_size;
-    
     BOOL finished  = NO;
-    while (1) {
+    while(!finished){
+        AVFrame *audioFrame = av_frame_alloc();
+        AVPacket packet;
+        packet.data = NULL;
+        packet.size = 0;
+        int data_present;
         
-        if (finished){
-            break;
+        // 读取出一帧未解码数据
+        finished =  (av_read_frame(inputFormatCtx, &packet) == AVERROR_EOF);
+        
+        // 判断该帧数据是否为音频数据
+        if (packet.stream_index != audioStream) {
+            continue;
         }
         
-        // 查看fifo队列中的大小是否超过可以编码的一帧的大小
-        while (av_audio_fifo_size(fifo) < output_frame_size) {
-            
-            // 如果没超过，则继续进行解码
-            
-            if (finished)
-            {
-                break;
-            }
-            
-            //
-            AVFrame *audioFrame = av_frame_alloc();
-            AVPacket packet;
-            packet.data = NULL;
-            packet.size = 0;
-            int data_present;
-            
-            // 读取出一帧未解码数据
-            finished =  (av_read_frame(inputFormatCtx, &packet) == AVERROR_EOF);
-            
-            // 判断该帧数据是否为音频数据
-            if (packet.stream_index != audioStream) {
-                continue;
-            }
-            
-            // 开始进行解码
-            if ( avcodec_decode_audio4(inputCodecCtx, audioFrame, &data_present, &packet) < 0) {
-                NSLog(@"音频解码失败");
-                return ;
-            }
-            
-            
-            if (data_present)
-            {
-                //只写入单通道的数据
-                NSData *data = [NSData dataWithBytes:audioFrame->data[0] length:audioFrame->linesize[0]];
-                [pcmfileHandle writeData:data];
-                //NSLog(@"data length = %lu", data.length);
-            }
+        // 开始进行解码
+        if ( avcodec_decode_audio4(inputCodecCtx, audioFrame, &data_present, &packet) < 0) {
+            NSLog(@"音频解码失败");
+            return ;
         }
         
+        av_packet_unref(&packet); //av_read_frame会申请内存，导致内存泄漏
+        
+        if (data_present)
+        {
+            //只写入单通道的数据
+            NSData *data = [NSData dataWithBytes:audioFrame->data[0] length:audioFrame->linesize[0]];
+            [pcmfileHandle writeData:data];
+            data = nil;
+            //NSLog(@"data length = %lu", data.length);
+        }
+        
+        av_frame_free(&audioFrame);
+        av_frame_unref(audioFrame);
+        av_free(audioFrame);
     }
     
+    [pcmfileHandle closeFile];
+    pcmfileHandle = nil;
+    avcodec_close(inputCodecCtx);
+    avformat_close_input(&inputFormatCtx);
+    avformat_free_context(inputFormatCtx);
     NSLog(@"***************************************end");
 }
 

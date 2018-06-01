@@ -73,7 +73,7 @@
         //[player readPcmAndPlay:@"record.pcm"];
         player->mDelay = [_DelayLabel.text intValue];
         player->mDecay = [_DecayLabel.text floatValue];
-        [player playPcmFileWithEffect:@"record.pcm"];
+        [player playPcmFileWithEffect:@"record.pcm" withBGM:@"陈一发儿 - 弦上有春秋.pcm"];
     }
 }
 

@@ -131,15 +131,59 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
     AudioQueueStart(audioQueue, NULL);
 }
 
-- (void)playPcmFileWithEffect:(NSString*)pcmFileName {
+- (void)playPcmFileWithEffect:(NSString*)pcmFileName withBGM:(NSString*)mp3FileName {
+    NSString *docDir = [ZSJPathUtilities documentsPath];
+    NSString *mp3Path = [docDir stringByAppendingPathComponent:mp3FileName];
+    NSFileHandle *mp3FileHandle = [NSFileHandle fileHandleForReadingAtPath:mp3Path];
+    
+    NSData *mp3Data = [mp3FileHandle readDataToEndOfFile];
+    NSInteger mp3Len = [mp3Data length];
+    Byte *mp3 = new Byte[mp3Len];
+    memcpy(mp3, [mp3Data bytes], mp3Len);
+    
+    //录音混响
+    Byte* reverb = NULL;
+    NSInteger reverbLen = [self reverbPcm:pcmFileName outBuffer:&reverb];
+    
+    //混音
+    mAlign = -100;
+    NSInteger mixLen = reverbLen < mp3Len ? reverbLen : mp3Len;
+    Byte *mix = new Byte[mixLen];
+    NSInteger processLen = mixLen >> 1;
+    for(NSInteger i = 0; i<processLen; i++){
+        short mSound = (short)((mp3[i*2+1]<<8)&0xff00) | (mp3[i*2]&0x0ff);
+        
+        short rSound = 0;
+        NSInteger j = i - mAlign; //reverb的读取位置
+        if(j>=0 && j*2+1<reverbLen){
+            rSound = (short)((reverb[j*2+1]<<8)&0xff00) | (reverb[j*2]&0x0ff);
+        }
+        
+        int mixSound = (rSound>>1) + (mSound>>2);
+        
+        mix[i*2+1] = (mixSound >> 8) &0x0ff;
+        mix[i*2] = (mixSound & 0x0ff);
+    }
+    
+    if(mp3 != NULL){
+        delete[] mp3;
+        mp3 = NULL;
+    }
+    if(reverb != NULL){
+        delete[] reverb;
+        reverb = NULL;
+    }
+    [self play:mix Length:mixLen];
+}
+
+- (NSInteger)reverbPcm:(NSString*)pcmFileName outBuffer:(Byte**)reverbBuffer {
     NSString *docDir = [ZSJPathUtilities documentsPath];
     NSString *pcmPath = [docDir stringByAppendingPathComponent:pcmFileName];
     NSFileHandle *pcmFileHandle = [NSFileHandle fileHandleForReadingAtPath:pcmPath];
     
-    NSLog(@"开始合成效果>>>>");
     NSData *data = [pcmFileHandle readDataToEndOfFile];
     NSInteger len = [data length];
-    Byte* reverb = new Byte[len];
+    Byte *reverb = new Byte[len];
     memcpy(reverb, [data bytes], len);
     
     //混响算法
@@ -154,6 +198,14 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
         reverb[i*2+1] = (reverbSound >> 8) &0x0ff;
         reverb[i*2] = (reverbSound & 0x0ff);
     }
+    *reverbBuffer = reverb;
+    
+    return len;
+}
+
+- (void)playPcmFileWithEffect:(NSString*)pcmFileName {
+    Byte* reverb = NULL;
+    NSInteger len = [self reverbPcm:pcmFileName outBuffer:&reverb];
     [self play:reverb Length:len];
 }
 

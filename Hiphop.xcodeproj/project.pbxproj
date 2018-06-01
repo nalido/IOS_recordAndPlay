@@ -820,6 +820,7 @@
 				CODE_SIGN_ENTITLEMENTS = Hiphop/Hiphop.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				"CODE_SIGN_STYLE[sdk=*]" = Automatic;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 94TY656Q5Y;
 				ENABLE_BITCODE = YES;
 				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/Hiphop/FFmpeg-iOS/include";

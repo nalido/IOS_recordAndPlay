@@ -38,6 +38,8 @@
     int mDelay;
     //声音衰减系数， 即环境消音系数
     float mDecay;
+    //录音和背景音乐对齐位置, 表示录音第一帧对应于背景音乐的帧数位置。
+    int mAlign;
 }
 
 /**
@@ -54,6 +56,11 @@
  带混响效果播放pcm文件， 单单用来播放录音的混响效果
  **/
 - (void)playPcmFileWithEffect:(NSString*)pcmFileName;
+
+/**
+ 同时播放背景音乐和录音，录音带混响效果
+ **/
+- (void)playPcmFileWithEffect:(NSString*)pcmFileName withBGM:(NSString*)mp3FileName;
 
 - (void)stop;
 
