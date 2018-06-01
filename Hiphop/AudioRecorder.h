@@ -33,10 +33,16 @@ typedef struct AQCallbackStruct{
     NSFileHandle *pcmfileHandle;
 }
 
-- (id) init:(NSString*)pcmFileName;
+/**
+ 初始化录音器
+ 
+ @param pcmFileName 录音保存名称
+ @param sample_rate 当前录音采用的采样率
+ **/
+- (id) init:(NSString*)pcmFileName sampleRate:(NSInteger)sample_rate;
+
 - (void) start;
 - (void) stop;
-//- (Byte*) getBytes;
 - (void) processAudioBuffer:(AudioQueueBufferRef)buffer withQueue:(AudioQueueRef) queue;
 
 @property (nonatomic, assign) AQCallbackStruct aqc;

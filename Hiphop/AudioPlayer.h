@@ -60,7 +60,16 @@
 /**
  同时播放背景音乐和录音，录音带混响效果
  **/
-- (void)playPcmFileWithEffect:(NSString*)pcmFileName withBGM:(NSString*)mp3FileName;
+- (void)playPcmFileWithEffect:(NSString*)pcmFileName withBGM:(NSString*)bgmFileName;
+
+/**
+ 以当前混响参数保存演唱结果。
+ 
+ @param saveFileName 保存文件名， 先存为pcm文件。后续可以编码成别的格式。如aac文件（*.aac)
+ @param recordFileName 录音pcm文件名
+ @param bgmFileName 背景音乐pcm文件名
+ **/
+- (void)saveSingRecord:(NSString*)saveFileName recordFile:(NSString*)recordFileName bgmFile:(NSString*)bgmFileName;
 
 - (void)stop;
 

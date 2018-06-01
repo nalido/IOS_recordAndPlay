@@ -20,6 +20,10 @@
     NSString *mp3FileName;
     NSString *pcmFileName;
     NSString *recordFileName;
+    NSString *saveFileName;
+    
+    //解码获取的背景音乐采样率 用以设置录音的采样率。
+    NSInteger sample_rate;
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *MessageLabel;
@@ -31,6 +35,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *DecayLabel;
 @property (weak, nonatomic) IBOutlet UIButton *BtnPlaySing;
 @property (weak, nonatomic) IBOutlet UIButton *BtnSing;
+@property (weak, nonatomic) IBOutlet UIButton *BtnPlaySaved;
 
 
 @end
@@ -38,8 +43,20 @@
 @implementation ViewController
 
 - (IBAction)onClickSaveSing:(UIButton *)sender {
+    [player saveSingRecord:saveFileName recordFile:recordFileName bgmFile:pcmFileName];
 }
 
+- (IBAction)onClickPlaySaved:(UIButton *)sender {
+    NSString *action = sender.titleLabel.text;
+    if([action isEqualToString:@"停止"]){
+        [sender setTitle:@"播放保存" forState:UIControlStateNormal];
+        [player stop];
+    }
+    else{
+        [sender setTitle:@"停止" forState:UIControlStateNormal];
+        [player readPcmAndPlay:saveFileName];
+    }
+}
 
 - (IBAction)onSliderDelayChanged:(UISlider *)sender {
     _DelayLabel.text = [NSString stringWithFormat:@"%d", (int)sender.value];
@@ -94,7 +111,7 @@
     }
     else{
         [sender setTitle:@"停止" forState:UIControlStateNormal];
-        recorder = [recorder init:recordFileName];
+        recorder = [recorder init:recordFileName sampleRate:sample_rate];
         [recorder start];
     }
 }
@@ -143,11 +160,14 @@
     
     UIImage *pic = [UIImage imageWithData:mp3Info->pic];
     _Mp3Img.image = pic;
+    
+    sample_rate = mp3Info->sample_rate;
 }
 
 
 - (IBAction)onClickDecode:(id)sender {
     [AudioDecoder convertMP3:mp3FileName toPCM:pcmFileName];
+    [self onClickShowInfo:nil];
 }
 
 - (void)playFinished {
@@ -158,6 +178,7 @@
     [_BtnPlayBGM setTitle:@"播放背景音乐(已解码)" forState:UIControlStateNormal];
     [_BtnPlayRecord setTitle:@"录音回放" forState:UIControlStateNormal];
     [_BtnPlaySing setTitle:@"演唱回放" forState:UIControlStateNormal];
+    [_BtnPlaySaved setTitle:@"播放保存" forState:UIControlStateNormal];
     
     if(isSingMode){
         [recorder stop];
@@ -169,7 +190,7 @@
     if(isSingMode){
         _MessageLabel.text = @"演唱ing...";
         [_MessageLabel sizeToFit];
-        recorder = [recorder init: recordFileName];
+        recorder = [recorder init: recordFileName sampleRate:sample_rate];
         [recorder start];
     }
 }
@@ -183,16 +204,18 @@
     player = [[AudioPlayer alloc] init];
     recorder = [[AudioRecorder alloc] init];
     isSingMode = false;
+    sample_rate = 44100;
     
     mp3FileName = @"陈一发儿 - 弦上有春秋.mp3";
     pcmFileName = @"陈一发儿 - 弦上有春秋.pcm";
     recordFileName = @"record.pcm";
+    saveFileName = @"sing.pcm";
     
     //创建异步子线程测试录音功能
     //发现录音功能在软件开始时直接点击‘演唱’会有无法录音的问题，只有先点‘录音’后就好了。这个原因还未知，先建个子线程录一秒钟。
     dispatch_queue_t queue = dispatch_queue_create("com.hiphop.testQueue", DISPATCH_QUEUE_CONCURRENT);
     dispatch_async(queue, ^{
-        AudioRecorder *tmpRecorder = [[AudioRecorder alloc] init:@"testrecord.pcm"];
+        AudioRecorder *tmpRecorder = [[AudioRecorder alloc] init:@"testrecord.pcm" sampleRate:44100];
         [tmpRecorder start];
         sleep(1);
         [tmpRecorder stop];

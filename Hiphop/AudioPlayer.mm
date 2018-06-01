@@ -131,7 +131,29 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
     AudioQueueStart(audioQueue, NULL);
 }
 
+- (void)saveSingRecord:(NSString*)saveFileName recordFile:(NSString*)recordFileName bgmFile:(NSString*)bgmFileName {
+    Byte *mix = NULL;
+    NSInteger mixLen = [self mix:recordFileName withBGM:bgmFileName outBuffer:&mix];
+    
+    NSData *data = [NSData dataWithBytes:mix length:mixLen];
+    NSString *docDir = [ZSJPathUtilities documentsPath];
+    NSString *savePath = [docDir stringByAppendingPathComponent:saveFileName];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager removeItemAtPath:savePath error:nil];
+    [fileManager createFileAtPath:savePath contents:nil attributes:nil];
+    NSFileHandle *saveFileHandle = [NSFileHandle fileHandleForWritingAtPath:savePath];
+    [saveFileHandle writeData:data];
+}
+
+
 - (void)playPcmFileWithEffect:(NSString*)pcmFileName withBGM:(NSString*)mp3FileName {
+    Byte *mix = NULL;
+    NSInteger mixLen = [self mix:pcmFileName withBGM:mp3FileName outBuffer:&mix];
+    
+    [self play:mix Length:mixLen];
+}
+
+- (NSInteger)mix:(NSString*)pcmFileName withBGM:(NSString*)mp3FileName outBuffer:(Byte**)mixBuffer {
     NSString *docDir = [ZSJPathUtilities documentsPath];
     NSString *mp3Path = [docDir stringByAppendingPathComponent:mp3FileName];
     NSFileHandle *mp3FileHandle = [NSFileHandle fileHandleForReadingAtPath:mp3Path];
@@ -173,7 +195,9 @@ static void bufferCallback(void *inUserData, AudioQueueRef inAQ, AudioQueueBuffe
         delete[] reverb;
         reverb = NULL;
     }
-    [self play:mix Length:mixLen];
+    
+    *mixBuffer = mix;
+    return mixLen;
 }
 
 - (NSInteger)reverbPcm:(NSString*)pcmFileName outBuffer:(Byte**)reverbBuffer {

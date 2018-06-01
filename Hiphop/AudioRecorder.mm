@@ -25,7 +25,7 @@ static void AQInputCallback(void *inUserData, AudioQueueRef inAudioQueue, AudioQ
     }
 }
 
-- (id) init:(NSString*)pcmFileName{
+- (id) init:(NSString*)pcmFileName sampleRate:(NSInteger)sample_rate {
     self = [super init];
     if(self){
         //pcm文件保存路径
@@ -37,6 +37,7 @@ static void AQInputCallback(void *inUserData, AudioQueueRef inAudioQueue, AudioQ
         pcmfileHandle = [NSFileHandle fileHandleForWritingAtPath:pcmPath];
         
         aqc.mDataFormat.mSampleRate = kSamplingRate;
+        if(sample_rate != 0) aqc.mDataFormat.mSampleRate = sample_rate;
         aqc.mDataFormat.mFormatID = kAudioFormatLinearPCM;
         aqc.mDataFormat.mFormatFlags = kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
         aqc.mDataFormat.mFramesPerPacket = 1;
