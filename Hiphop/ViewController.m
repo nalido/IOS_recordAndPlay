@@ -15,6 +15,11 @@
     AudioPlayer* player;
     AudioRecorder* recorder;
     BOOL isSingMode; //是否演唱模式，用于录音和背景音乐同步, 若为真，则在播放开始事件中启动录音。
+    
+    //歌曲变量
+    NSString *mp3FileName;
+    NSString *pcmFileName;
+    NSString *recordFileName;
 }
 
 @property (weak, nonatomic) IBOutlet UILabel *MessageLabel;
@@ -31,6 +36,10 @@
 @end
 
 @implementation ViewController
+
+- (IBAction)onClickSaveSing:(UIButton *)sender {
+}
+
 
 - (IBAction)onSliderDelayChanged:(UISlider *)sender {
     _DelayLabel.text = [NSString stringWithFormat:@"%d", (int)sender.value];
@@ -58,7 +67,7 @@
         [sender setTitle:@"停止" forState:UIControlStateNormal];
         isSingMode = true;
         [recorder stop];
-        [player readPcmAndPlay:@"陈一发儿 - 弦上有春秋.pcm"];
+        [player readPcmAndPlay:pcmFileName];
     }
 }
 
@@ -73,7 +82,7 @@
         //[player readPcmAndPlay:@"record.pcm"];
         player->mDelay = [_DelayLabel.text intValue];
         player->mDecay = [_DecayLabel.text floatValue];
-        [player playPcmFileWithEffect:@"record.pcm" withBGM:@"陈一发儿 - 弦上有春秋.pcm"];
+        [player playPcmFileWithEffect:recordFileName withBGM:pcmFileName];
     }
 }
 
@@ -85,7 +94,7 @@
     }
     else{
         [sender setTitle:@"停止" forState:UIControlStateNormal];
-        recorder = [recorder init: @"record.pcm"];
+        recorder = [recorder init:recordFileName];
         [recorder start];
     }
 }
@@ -101,7 +110,7 @@
         //[player readPcmAndPlay:@"record.pcm"];
         player->mDelay = [_DelayLabel.text intValue];
         player->mDecay = [_DecayLabel.text floatValue];
-        [player playPcmFileWithEffect:@"record.pcm"];
+        [player playPcmFileWithEffect:recordFileName];
     }
 }
 
@@ -121,12 +130,12 @@
     }
     else{
         [sender setTitle:@"停止" forState:UIControlStateNormal];
-        [player readPcmAndPlay:@"陈一发儿 - 弦上有春秋.pcm"];
+        [player readPcmAndPlay:pcmFileName];
     }
 }
 
 - (IBAction)onClickShowInfo:(UIButton *)sender {
-    Mp3Info *mp3Info = [AudioDecoder showMp3Info:@"陈一发儿 - 弦上有春秋.mp3" needImage:true];
+    Mp3Info *mp3Info = [AudioDecoder showMp3Info:mp3FileName needImage:true];
     _Mp3InfoLabel.text = [mp3Info getAllInfoString];
     _Mp3InfoLabel.numberOfLines = 0;
     _Mp3InfoLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -138,10 +147,7 @@
 
 
 - (IBAction)onClickDecode:(id)sender {
-    //[AudioDecoder convertMP3:@"北京欢迎你.mp3" toPCM:@"北京欢迎你.pcm"];
-    //[AudioDecoder convertMP3:@"凉凉 (Cover张碧晨&杨宗纬)-黄仁烁;王若伊.mp3" toPCM:@"凉凉 (Cover张碧晨&杨宗纬)-黄仁烁;王若伊.pcm"];
-    [AudioDecoder convertMP3:@"陈一发儿 - 弦上有春秋.mp3" toPCM:@"陈一发儿 - 弦上有春秋.pcm"];
-    //[self convertMP3ToAAC];
+    [AudioDecoder convertMP3:mp3FileName toPCM:pcmFileName];
 }
 
 - (void)playFinished {
@@ -163,7 +169,7 @@
     if(isSingMode){
         _MessageLabel.text = @"演唱ing...";
         [_MessageLabel sizeToFit];
-        recorder = [recorder init: @"record.pcm"];
+        recorder = [recorder init: recordFileName];
         [recorder start];
     }
 }
@@ -177,6 +183,10 @@
     player = [[AudioPlayer alloc] init];
     recorder = [[AudioRecorder alloc] init];
     isSingMode = false;
+    
+    mp3FileName = @"陈一发儿 - 弦上有春秋.mp3";
+    pcmFileName = @"陈一发儿 - 弦上有春秋.pcm";
+    recordFileName = @"record.pcm";
     
     //创建异步子线程测试录音功能
     //发现录音功能在软件开始时直接点击‘演唱’会有无法录音的问题，只有先点‘录音’后就好了。这个原因还未知，先建个子线程录一秒钟。
